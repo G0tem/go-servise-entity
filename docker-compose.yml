@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  entity-service:
+    restart: always
+    mem_limit: 500M
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+    env_file:
+      - .env
+    ports:
+      - '${HTTP_PORT:-8010}:${HTTP_PORT:-8010}'
+    networks:
+      - go-servise-base_local-network
+    labels:
+      - 'traefik.enable=true'
+      # Router rule
+      # - 'traefik.http.routers.payment.rule=Host(`xxx.com`) && PathPrefix(`/api/v1/payment`)'
+      - 'traefik.http.routers.entity.rule=Host(`127.0.0.1`) && PathPrefix(`/api/v1/entity`)'
+      - 'traefik.http.routers.entity.entrypoints=websecure'
+      - 'traefik.http.routers.entity.tls=true'
+      - 'traefik.http.routers.entity.tls.certresolver=letsencrypt'
+      # Port внутри контейнера
+      - 'traefik.http.services.entity.loadbalancer.server.port=8010'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+networks:
+  go-servise-base_local-network:
+    external: true
