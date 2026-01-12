@@ -261,7 +261,7 @@ if [ "$COMMAND" == "get" ]; then
     [[ -e .netrc ]] || (echo "File .netrc doesn't exists in current folder ($PWD)" && exit 1)
     parse_netrc .netrc
     export GO111MODULE=on
-    export GOPRIVATE=github.com/Capstane
+    export GOPRIVATE=github.com/G0tem
     export GOPROXY=https://$PASSWORD@github.com
     go get
 fi
@@ -270,7 +270,7 @@ if [ "$COMMAND" == "tidy" ]; then
     echo Run go get with .netrc:
     parse_netrc .netrc
     export GO111MODULE=on
-    export GOPRIVATE=github.com/Capstane
+    export GOPRIVATE=github.com/G0tem
     export GOPROXY=https://$PASSWORD@github.com
     go mod tidy
 fi

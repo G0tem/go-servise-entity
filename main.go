@@ -13,7 +13,7 @@ import (
 	"github.com/G0tem/go-servise-entity/internal/service/factory"
 )
 
-// @title go-servise-entoty Swagger
+// @title Local-Template-Entity Swagger
 // @version 1.0
 // @description This is an API of payment-service for Socialweb application
 

@@ -7,20 +7,18 @@ import (
 	"log"
 	"time"
 
-	"github.com/G0tem/go-servise-entity/internal/model"
-	"github.com/G0tem/go-servise-entity/internal/types"
 	"github.com/gorilla/websocket"
 	"gorm.io/gorm"
 )
 
 const (
-	wsURLTemplate = "wss://ws-gate.invoicebox.ru/v3/gate/rpc?token=%s"
+	wsURLTemplate = "wss://ws-gate.service.ru/v3/gate/rpc?token=%s"
 	writeWait     = 10 * time.Second
 	pongWait      = 60 * time.Second
 	pingPeriod    = (pongWait * 9) / 10
 )
 
-type InvoiceboxWebSocketClient struct {
+type WebSocketClient struct {
 	conn      *websocket.Conn
 	apiToken  string
 	db        *gorm.DB
@@ -28,8 +26,8 @@ type InvoiceboxWebSocketClient struct {
 	interrupt chan struct{}
 }
 
-func NewInvoiceboxWebSocketClient(apiToken string, db *gorm.DB) *InvoiceboxWebSocketClient {
-	return &InvoiceboxWebSocketClient{
+func NewWebSocketClient(apiToken string, db *gorm.DB) *WebSocketClient {
+	return &WebSocketClient{
 		apiToken:  apiToken,
 		db:        db,
 		done:      make(chan struct{}),
@@ -37,7 +35,7 @@ func NewInvoiceboxWebSocketClient(apiToken string, db *gorm.DB) *InvoiceboxWebSo
 	}
 }
 
-func (c *InvoiceboxWebSocketClient) Connect(ctx context.Context) error {
+func (c *WebSocketClient) Connect(ctx context.Context) error {
 	url := fmt.Sprintf(wsURLTemplate, c.apiToken)
 	conn, _, err := websocket.DefaultDialer.Dial(url, nil)
 	if err != nil {
@@ -53,15 +51,11 @@ func (c *InvoiceboxWebSocketClient) Connect(ctx context.Context) error {
 	return nil
 }
 
-func (c *InvoiceboxWebSocketClient) Done() <-chan struct{} {
+func (c *WebSocketClient) Done() <-chan struct{} {
 	return c.done
 }
 
-func (c *InvoiceboxWebSocketClient) close() {
-	close(c.done)
-}
-
-func (c *InvoiceboxWebSocketClient) readPump() {
+func (c *WebSocketClient) readPump() {
 	// defer сработает, когда readPump завершится (при разрыве соединения)
 	defer func() {
 		close(c.done)      // уведомляем, что клиент отключён
@@ -85,35 +79,17 @@ func (c *InvoiceboxWebSocketClient) readPump() {
 		log.Printf("Received raw message: %s", message)
 
 		var notification struct {
-			Method string                  `json:"method"`
-			Params types.OrderNotification `json:"params"`
+			Method string `json:"method"`
 		}
 
 		if err := json.Unmarshal(message, &notification); err != nil {
 			log.Printf("Error unmarshalling message: %v", err)
 			continue
 		}
-
-		if notification.Method == "onOrderStatusChange" {
-			log.Printf("Order status changed: ID=%s, Status=%s", notification.Params.ID, notification.Params.Status)
-
-			// Обновляем статус в БД
-			err := updatePaymentStatus(c.db, notification.Params)
-			if err != nil {
-				log.Printf("Failed to update payment status: %v", err)
-			}
-		} else if notification.Method == "getStatus" {
-			// Отвечаем диагностикой
-			resp := map[string]interface{}{
-				"method": "status",
-				"result": "OK",
-			}
-			_ = c.conn.WriteJSON(resp)
-		}
 	}
 }
 
-func (c *InvoiceboxWebSocketClient) writePump() {
+func (c *WebSocketClient) writePump() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
@@ -130,17 +106,4 @@ func (c *InvoiceboxWebSocketClient) writePump() {
 			return
 		}
 	}
-}
-
-func updatePaymentStatus(db *gorm.DB, notif types.OrderNotification) error {
-	var payment model.Entity
-	if err := db.Where("invoicebox_id = ?", notif.ID).First(&payment).Error; err != nil {
-		return fmt.Errorf("failed to find payment by invoicebox_id: %w", err)
-	}
-
-	// Обновляем статус
-	return db.Model(&payment).Updates(map[string]interface{}{
-		"status":      notif.Status,
-		"payment_url": nil, // можно очистить, если заказ завершён
-	}).Error
 }

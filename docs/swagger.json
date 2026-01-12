@@ -2,7 +2,7 @@
     "swagger": "2.0",
     "info": {
         "description": "This is an API of payment-service for Socialweb application",
-        "title": "go-servise-entoty Swagger",
+        "title": "Local-Template-Entity Swagger",
         "contact": {},
         "version": "1.0"
     },

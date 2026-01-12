@@ -156,7 +156,7 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "go-servise-entoty Swagger",
+	Title:            "Local-Template-Entity Swagger",
 	Description:      "This is an API of payment-service for Socialweb application",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

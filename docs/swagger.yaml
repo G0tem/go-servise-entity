@@ -26,7 +26,7 @@ definitions:
 info:
   contact: {}
   description: This is an API of payment-service for Socialweb application
-  title: go-servise-entoty Swagger
+  title: Local-Template-Entity Swagger
   version: "1.0"
 paths:
   /entity/create:
