@@ -7,7 +7,9 @@ WORKDIR /go/src/server
 # Copy all the Code and stuff to compile everything
 COPY docs docs
 COPY internal internal
+COPY proto proto
 COPY go.mod go.mod
+COPY go.sum go.sum
 COPY main.go main.go
 
 ENV GO111MODULE=on

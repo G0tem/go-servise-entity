@@ -13,6 +13,8 @@ type Config struct {
 	HttpPort  uint16 `default:"8007" envconfig:"HTTP_PORT"`
 	SecretKey string `binding:"required" envconfig:"SECRET_KEY"`
 
+	AuthGrpcAddress string `default:"localhost:50051" envconfig:"AUTH_GRPC_ADDRESS"`
+
 	RMQConnUrl            string `binding:"required" envconfig:"RMQ_CONN_URL"`
 	RMQConsumeQ           string `binding:"required" envconfig:"RMQ_QUEUE_CONSUME"`
 	RMQConsumeB           string `binding:"required" envconfig:"RMQ_BINDING_CONSUME"`
@@ -40,9 +42,10 @@ func LoadConfig() Config {
 	logLevel, _ := strconv.Atoi(os.Getenv("LOG_LEVEL"))
 
 	return Config{
-		LogLevel:  logLevel,
-		HttpPort:  internal.ParseUint16(os.Getenv("HTTP_PORT"), 8080),
-		SecretKey: os.Getenv("SECRET_KEY"),
+		LogLevel:        logLevel,
+		HttpPort:        internal.ParseUint16(os.Getenv("HTTP_PORT"), 8010),
+		SecretKey:       os.Getenv("SECRET_KEY"),
+		AuthGrpcAddress: internal.Getenv("AUTH_GRPC_ADDRESS", "localhost:50051"),
 
 		RMQConnUrl:            os.Getenv("RMQ_CONN_URL"),
 		RMQConsumeQ:           os.Getenv("RMQ_QUEUE_CONSUME"),
