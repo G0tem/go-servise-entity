@@ -18,11 +18,11 @@ services:
     labels:
       - 'traefik.enable=true'
       # Router rule
-      # - 'traefik.http.routers.payment.rule=Host(`xxx.com`) && PathPrefix(`/api/v1/payment`)'
-      - 'traefik.http.routers.entity.rule=Host(`127.0.0.1`) && PathPrefix(`/api/v1/entity`)'
-      - 'traefik.http.routers.entity.entrypoints=websecure'
-      - 'traefik.http.routers.entity.tls=true'
-      - 'traefik.http.routers.entity.tls.certresolver=letsencrypt'
+      - "traefik.http.routers.entity.rule=PathPrefix(`/api/v1/entity`)"
+      # - 'traefik.http.routers.entity.rule=Host(`127.0.0.1`) && PathPrefix(`/api/v1/entity`)'
+      - 'traefik.http.routers.entity.entrypoints=web'
+      # - 'traefik.http.routers.entity.tls=true'
+      # - 'traefik.http.routers.entity.tls.certresolver=letsencrypt'
       # Port внутри контейнера
       - 'traefik.http.services.entity.loadbalancer.server.port=8010'
     extra_hosts:

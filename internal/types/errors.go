@@ -10,9 +10,3 @@ type FailureErrorResponse struct {
 	Message string `json:"message"`
 	Error   string `json:"error"`
 }
-
-type NotificationError struct {
-	Status  string `json:"status"` // всегда "error"
-	Code    string `json:"code,omitempty"`
-	Message string `json:"message,omitempty"`
-}
