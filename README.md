@@ -11,6 +11,6 @@
 # Получите JWT токен через auth сервис
 # Затем вызовите тестовый эндпоинт:
 
-curl -X GET http://localhost:8007/api/v1/entity/test_grpc \
+curl -X GET http://localhost:8010/api/v1/entity/test_grpc \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
