@@ -12,7 +12,7 @@ type NotifyMessage struct {
 	// message payload
 	MessageParams interface{} `json:"params"`
 	// uuid in string representation
-	TargetUserId string `json:"target_user_id"`
+	TargetId string `json:"target_id"`
 }
 
 func (notifyMessage NotifyMessage) MarshalBinary() ([]byte, error) {

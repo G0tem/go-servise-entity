@@ -10,13 +10,13 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func PushMessage(userId string, message interface{}, targetUserId string, cfg *config.Config) error {
+func PushMessage(userId string, message interface{}, targetId string, cfg *config.Config) error {
 
 	body, err := json.Marshal(dto.NotifyMessage{
 		UserId:          userId,
 		NotifyTimestamp: time.Now().UnixNano() / 1e6,
 		MessageParams:   message,
-		TargetUserId:    targetUserId,
+		TargetId:        targetId,
 	})
 	if err != nil {
 		return err
@@ -59,7 +59,7 @@ func getChannel(conn *amqp.Connection, cfg *config.Config) (*amqp.Channel, error
 
 	err = ch.ExchangeDeclarePassive(
 		cfg.RMQNotifyExchange, // name
-		"fanout",              // type
+		"direct",              // type
 		true,                  // durable
 		false,                 // auto-deleted
 		false,                 // internal
@@ -77,42 +77,4 @@ func getChannel(conn *amqp.Connection, cfg *config.Config) (*amqp.Channel, error
 	}
 
 	return ch, nil
-}
-
-func autocreateQueue(conn *amqp.Connection, cfg *config.Config) error {
-	ch, err := conn.Channel()
-	if err != nil {
-		return err
-	}
-	// Always close channel after queue redeclare (otherwise first call delivery/consume fail)
-	defer ch.Close()
-
-	_, err = ch.QueueDeclare(
-		cfg.RMQConsumeQ, // name
-		true,            // durable
-		false,           // delete when unused
-		false,           // exclusive
-		false,           // no-wait
-		nil,             // arguments
-	)
-	return err
-}
-
-func autocreateExchange(conn *amqp.Connection, exchangeName string) error {
-	ch, err := conn.Channel()
-	if err != nil {
-		return err
-	}
-	defer ch.Close()
-
-	err = ch.ExchangeDeclare(
-		exchangeName, // name
-		"fanout",     // type
-		true,         // durable
-		false,        // auto-deleted
-		false,        // internal
-		false,        // no-wait
-		nil,          // arguments
-	)
-	return err
 }

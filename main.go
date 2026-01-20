@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"runtime"
 
 	_ "github.com/lib/pq"
@@ -26,10 +27,12 @@ import (
 func main() {
 	// Initialize Zerolog logger with output to stdout
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+
 	cfg := config.LoadConfig()
 	zerolog.SetGlobalLevel(zerolog.Level(cfg.LogLevel))
 
-	go queue.ListenStreamingQueue(cfg.RMQConnUrl)
+	go queue.ListenRabbitQueue(&cfg)
 
 	// We are need >= 2 threads
 	moreThenTwoThreadsRuntime()

@@ -45,7 +45,6 @@ func (h *Handler) CheckUser(c *fiber.Ctx) error {
 // @Failure 500 {object} types.FailureErrorResponse
 // @Router /entity/create [post]
 func (h *Handler) CreateEntity(c *fiber.Ctx) error {
-	// Логика Изменения записи в кеше
 	log.Info().Msg("Start CreateEntity")
 
 	claims := c.Locals("claims").(*types.JwtClaims)

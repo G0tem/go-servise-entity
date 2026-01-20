@@ -49,9 +49,9 @@ func LoadConfig() Config {
 
 		RMQConnUrl:            os.Getenv("RMQ_CONN_URL"),
 		RMQConsumeQ:           os.Getenv("RMQ_QUEUE_CONSUME"),
-		RMQConsumeB:           internal.Getenv("RMQ_BINDING_CONSUME", "notify.*"),
-		RMQExchange:           internal.Getenv("RMQ_EXCHANGE", "notify"),
-		RMQConsumeQAutocreate: !internal.ParseBool(os.Getenv("RMQ_QUEUE_CONSUME_AUTOCREATE_DISABLED")),
+		RMQConsumeB:           internal.Getenv("RMQ_BINDING_CONSUME", "entity.*"),
+		RMQExchange:           internal.Getenv("RMQ_EXCHANGE", "entity_exchange"),
+		RMQConsumeQAutocreate: internal.ParseBool(os.Getenv("RMQ_QUEUE_CONSUME_AUTOCREATE_DISABLED")),
 
 		RMQNotifyExchange:           os.Getenv("RMQ_NOTIFY_EXCHANGE"),
 		RMQNotifyRoutingKey:         internal.Getenv("RMQ_NOTIFY_ROUTING_KEY", "notify.*"),
